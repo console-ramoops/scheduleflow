@@ -221,7 +221,7 @@ fun WeeklyViewScreen(
 
                     items(
                         items = dayPeriods,
-                        key = { it.periodNumber }
+                        key = { "${it.dayOfWeek}_${it.periodNumber}" }
                     ) { entry ->
                         PeriodCard(
                             entry = entry,

@@ -52,6 +52,9 @@ import androidx.compose.animation.togetherWith
 import com.example.ui.components.LiquidGlassNavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBarItem
+import top.yukonga.miuix.kmp.blur.isRuntimeShaderSupported
+import top.yukonga.miuix.kmp.blur.layerBackdrop
+import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 class MainActivity : ComponentActivity() {
@@ -107,6 +110,13 @@ fun MainAppScaffold(
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val useLiquidGlass = uiState.settings.useLiquidGlassBar
 
+    // Create a backdrop to capture main content for liquid glass blur
+    val contentBackdrop = if (useLiquidGlass && isRuntimeShaderSupported()) {
+        rememberLayerBackdrop()
+    } else {
+        null
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MiuixTheme.colorScheme.background,
@@ -151,6 +161,7 @@ fun MainAppScaffold(
                     bottom = if (useLiquidGlass) 0.dp else innerPadding.calculateBottomPadding()
                 )
         ) {
+            // Main content — wrapped in layerBackdrop so the nav bar can blur it
             AnimatedContent(
                 targetState = selectedTab,
                 transitionSpec = {
@@ -163,7 +174,15 @@ fun MainAppScaffold(
                     }
                 },
                 label = "ScreenTransition",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        if (contentBackdrop != null) {
+                            Modifier.layerBackdrop(contentBackdrop)
+                        } else {
+                            Modifier
+                        }
+                    )
             ) { tab ->
                 when (tab) {
                     0 -> HomeScreen(
@@ -188,12 +207,13 @@ fun MainAppScaffold(
                 }
             }
 
-            // Liquid Glass Floating Navigation Bar with Spring Physics
+            // Liquid Glass Floating Navigation Bar with real blur + lens refraction
             if (useLiquidGlass) {
                 LiquidGlassNavigationBar(
                     selectedTab = selectedTab,
                     onTabSelected = { selectedTab = it },
-                    modifier = Modifier.align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    backdrop = contentBackdrop
                 )
             }
         }
