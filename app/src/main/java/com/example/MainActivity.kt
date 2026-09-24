@@ -165,13 +165,8 @@ fun MainAppScaffold(
             AnimatedContent(
                 targetState = selectedTab,
                 transitionSpec = {
-                    if (targetState > initialState) {
-                        (slideInHorizontally { width -> (width * 0.25f).toInt() } + fadeIn(tween(220)))
-                            .togetherWith(slideOutHorizontally { width -> (-width * 0.25f).toInt() } + fadeOut(tween(180)))
-                    } else {
-                        (slideInHorizontally { width -> (-width * 0.25f).toInt() } + fadeIn(tween(220)))
-                            .togetherWith(slideOutHorizontally { width -> (width * 0.25f).toInt() } + fadeOut(tween(180)))
-                    }
+                    fadeIn(animationSpec = tween(120))
+                        .togetherWith(fadeOut(animationSpec = tween(90)))
                 },
                 label = "ScreenTransition",
                 modifier = Modifier
