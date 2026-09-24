@@ -186,9 +186,11 @@ fun WeeklyViewScreen(
                         .padding(horizontal = 16.dp, vertical = 4.dp)
                 )
 
-                val dayPeriods = (1..activeDay.periodCount).map { pNum ->
-                    uiState.allPeriods.find { it.dayOfWeek == activeDay.dayOfWeek && it.periodNumber == pNum }
-                        ?: PeriodEntry(dayOfWeek = activeDay.dayOfWeek, periodNumber = pNum)
+                val dayPeriods = remember(uiState.allPeriods, activeDay.dayOfWeek, activeDay.periodCount) {
+                    (1..activeDay.periodCount).map { pNum ->
+                        uiState.allPeriods.find { it.dayOfWeek == activeDay.dayOfWeek && it.periodNumber == pNum }
+                            ?: PeriodEntry(dayOfWeek = activeDay.dayOfWeek, periodNumber = pNum)
+                    }
                 }
 
                 LazyColumn(
@@ -217,7 +219,10 @@ fun WeeklyViewScreen(
                         }
                     }
 
-                    items(dayPeriods) { entry ->
+                    items(
+                        items = dayPeriods,
+                        key = { it.periodNumber }
+                    ) { entry ->
                         PeriodCard(
                             entry = entry,
                             onClick = { onEditPeriod(entry) }

@@ -60,6 +60,9 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.PressFeedbackType
 
+import androidx.compose.runtime.remember
+import com.example.ui.components.AnimatedPencilButton
+
 @Composable
 fun HomeScreen(
     uiState: TimetableUiState,
@@ -69,14 +72,20 @@ fun HomeScreen(
     onNavigateToWeekly: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM")
-    val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
-    val formattedDate = uiState.activeDate.format(dateFormatter)
-    val formattedTime = uiState.currentDateTime.format(timeFormatter)
-    val cutoffFormatted = uiState.settings.cutoffTime.format(timeFormatter)
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("EEEE, d MMMM") }
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("h:mm a") }
+    val formattedDate = remember(uiState.activeDate) { uiState.activeDate.format(dateFormatter) }
+    val formattedTime = remember(uiState.currentDateTime.hour, uiState.currentDateTime.minute) {
+        uiState.currentDateTime.format(timeFormatter)
+    }
+    val cutoffFormatted = remember(uiState.settings.cutoffHour, uiState.settings.cutoffMinute) {
+        uiState.settings.cutoffTime.format(timeFormatter)
+    }
 
-    val periods = uiState.periodsForActiveDay
-    val assignedCount = periods.count { it.isAssigned }
+    val periods = remember(uiState.allPeriods, uiState.activeDayOfWeek, uiState.activeDayConfig?.periodCount) {
+        uiState.periodsForActiveDay
+    }
+    val assignedCount = remember(periods) { periods.count { it.isAssigned } }
 
     LazyColumn(
         modifier = modifier
@@ -420,7 +429,10 @@ fun HomeScreen(
                 }
             }
         } else {
-            items(periods) { entry ->
+            items(
+                items = periods,
+                key = { it.periodNumber }
+            ) { entry ->
                 PeriodCard(
                     entry = entry,
                     onClick = { onEditPeriod(entry) }
@@ -440,7 +452,9 @@ fun PeriodCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val accentColor = if (entry.isAssigned) parseColor(entry.colorHex) else MiuixTheme.colorScheme.outline
+    val accentColor = remember(entry.colorHex, entry.isAssigned) {
+        if (entry.isAssigned) parseColor(entry.colorHex) else Color(0xFF8E8E93)
+    }
     val isFilled = entry.isAssigned
 
     Card(
@@ -574,19 +588,12 @@ fun PeriodCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(
+            AnimatedPencilButton(
                 onClick = onClick,
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit period",
-                    tint = MiuixTheme.colorScheme.onSurfaceVariantSummary,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
+                size = 36.dp,
+                iconSize = 18.dp,
+                testTag = "pencil_button_${entry.periodNumber}"
+            )
         }
     }
 }

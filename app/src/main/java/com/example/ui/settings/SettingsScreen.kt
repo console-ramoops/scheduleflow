@@ -63,6 +63,7 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.basic.TextField
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.window.WindowDialog
+import com.example.ui.components.AnimatedPencilButton
 
 @Composable
 fun SettingsScreen(
@@ -263,20 +264,16 @@ fun SettingsScreen(
                                         else
                                             MiuixTheme.colorScheme.onSurfaceVariantSummary.copy(alpha = 0.5f)
                                     )
-                                    IconButton(
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    AnimatedPencilButton(
                                         onClick = {
                                             editingDayName = dayConfig
                                             dayNameInput = dayConfig.displayName
                                         },
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Edit,
-                                            contentDescription = "Rename",
-                                            modifier = Modifier.size(14.dp),
-                                            tint = MiuixTheme.colorScheme.onSurfaceVariantSummary
-                                        )
-                                    }
+                                        size = 28.dp,
+                                        iconSize = 14.dp,
+                                        testTag = "rename_day_${dayConfig.dayOfWeek.name}"
+                                    )
                                 }
                                 Text(
                                     text = if (dayConfig.isEnabled) "${dayConfig.periodCount} periods" else "Off",

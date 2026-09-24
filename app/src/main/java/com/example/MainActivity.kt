@@ -42,8 +42,14 @@ import com.example.ui.settings.SettingsScreen
 import com.example.ui.setup.SetupWizardScreen
 import com.example.ui.theme.ScheduleFlowTheme
 import com.example.ui.weekly.WeeklyViewScreen
-import top.yukonga.miuix.kmp.basic.FloatingNavigationBar
-import top.yukonga.miuix.kmp.basic.FloatingNavigationBarItem
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import com.example.ui.components.LiquidGlassNavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBarItem
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -145,67 +151,50 @@ fun MainAppScaffold(
                     bottom = if (useLiquidGlass) 0.dp else innerPadding.calculateBottomPadding()
                 )
         ) {
-            when (selectedTab) {
-                0 -> HomeScreen(
-                    uiState = uiState,
-                    onFilterModeChange = { viewModel.setFilterMode(it) },
-                    onSelectDay = { viewModel.selectSpecificDay(it) },
-                    onEditPeriod = { viewModel.openPeriodEditor(it) },
-                    onNavigateToWeekly = { selectedTab = 1 }
-                )
-                1 -> WeeklyViewScreen(
-                    uiState = uiState,
-                    onEditPeriod = { viewModel.openPeriodEditor(it) }
-                )
-                2 -> SettingsScreen(
-                    uiState = uiState,
-                    onUpdateCutoffTime = { h, m -> viewModel.updateCutoffTime(h, m) },
-                    onUpdateDayConfig = { viewModel.updateDayConfig(it) },
-                    onUpdateTheme = { viewModel.updateTheme(it) },
-                    onResetTimetable = { viewModel.resetTimetable() },
-                    onUpdateLiquidGlassBar = { viewModel.updateLiquidGlassBar(it) }
-                )
+            AnimatedContent(
+                targetState = selectedTab,
+                transitionSpec = {
+                    if (targetState > initialState) {
+                        (slideInHorizontally { width -> (width * 0.25f).toInt() } + fadeIn(tween(220)))
+                            .togetherWith(slideOutHorizontally { width -> (-width * 0.25f).toInt() } + fadeOut(tween(180)))
+                    } else {
+                        (slideInHorizontally { width -> (-width * 0.25f).toInt() } + fadeIn(tween(220)))
+                            .togetherWith(slideOutHorizontally { width -> (width * 0.25f).toInt() } + fadeOut(tween(180)))
+                    }
+                },
+                label = "ScreenTransition",
+                modifier = Modifier.fillMaxSize()
+            ) { tab ->
+                when (tab) {
+                    0 -> HomeScreen(
+                        uiState = uiState,
+                        onFilterModeChange = { viewModel.setFilterMode(it) },
+                        onSelectDay = { viewModel.selectSpecificDay(it) },
+                        onEditPeriod = { viewModel.openPeriodEditor(it) },
+                        onNavigateToWeekly = { selectedTab = 1 }
+                    )
+                    1 -> WeeklyViewScreen(
+                        uiState = uiState,
+                        onEditPeriod = { viewModel.openPeriodEditor(it) }
+                    )
+                    2 -> SettingsScreen(
+                        uiState = uiState,
+                        onUpdateCutoffTime = { h, m -> viewModel.updateCutoffTime(h, m) },
+                        onUpdateDayConfig = { viewModel.updateDayConfig(it) },
+                        onUpdateTheme = { viewModel.updateTheme(it) },
+                        onResetTimetable = { viewModel.resetTimetable() },
+                        onUpdateLiquidGlassBar = { viewModel.updateLiquidGlassBar(it) }
+                    )
+                }
             }
 
-            // Liquid Glass Floating Navigation Bar
+            // Liquid Glass Floating Navigation Bar with Spring Physics
             if (useLiquidGlass) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .testTag("liquid_glass_navigation_bar_container")
-                ) {
-                    FloatingNavigationBar(
-                        color = MiuixTheme.colorScheme.surfaceContainer.copy(alpha = 0.88f),
-                        cornerRadius = 24.dp,
-                        shadowElevation = 8.dp,
-                        showDivider = true,
-                        modifier = Modifier.testTag("floating_navigation_bar")
-                    ) {
-                        FloatingNavigationBarItem(
-                            selected = selectedTab == 0,
-                            onClick = { selectedTab = 0 },
-                            icon = if (selectedTab == 0) Icons.Filled.Schedule else Icons.Outlined.Schedule,
-                            label = "Schedule",
-                            modifier = Modifier.testTag("nav_item_schedule")
-                        )
-
-                        FloatingNavigationBarItem(
-                            selected = selectedTab == 1,
-                            onClick = { selectedTab = 1 },
-                            icon = if (selectedTab == 1) Icons.Filled.CalendarViewWeek else Icons.Outlined.CalendarViewWeek,
-                            label = "Weekly",
-                            modifier = Modifier.testTag("nav_item_weekly")
-                        )
-
-                        FloatingNavigationBarItem(
-                            selected = selectedTab == 2,
-                            onClick = { selectedTab = 2 },
-                            icon = if (selectedTab == 2) Icons.Filled.Settings else Icons.Outlined.Settings,
-                            label = "Settings",
-                            modifier = Modifier.testTag("nav_item_settings")
-                        )
-                    }
-                }
+                LiquidGlassNavigationBar(
+                    selectedTab = selectedTab,
+                    onTabSelected = { selectedTab = it },
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
             }
         }
 
