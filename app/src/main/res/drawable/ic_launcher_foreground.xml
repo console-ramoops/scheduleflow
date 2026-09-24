@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Main Calendar/Timetable card body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,30 h48 c3.3,0 6,2.7 6,6 v42 c0,3.3 -2.7,6 -6,6 h-48 c-3.3,0 -6,-2.7 -6,-6 v-42 c0,-3.3 2.7,-6 6,-6 z" />
+
+    <!-- Top header bar of calendar in vibrant primary cyan/indigo -->
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M30,30 h48 c3.3,0 6,2.7 6,6 v10 h-60 v-10 c0,-3.3 2.7,-6 6,-6 z" />
+
+    <!-- Calendar binder rings -->
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M37,25 h4 c1.1,0 2,0.9 2,2 v6 c0,1.1 -0.9,2 -2,2 h-4 c-1.1,0 -2,-0.9 -2,-2 v-6 c0,-1.1 0.9,-2 2,-2 z" />
+    <path
+        android:fillColor="#93C5FD"
+        android:pathData="M67,25 h4 c1.1,0 2,0.9 2,2 v6 c0,1.1 -0.9,2 -2,2 h-4 c-1.1,0 -2,-0.9 -2,-2 v-6 c0,-1.1 0.9,-2 2,-2 z" />
+
+    <!-- Timetable period rows -->
+    <!-- Period 1: Math (amber) -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M32,51 h6 c1.1,0 2,0.9 2,2 v4 c0,1.1 -0.9,2 -2,2 h-6 c-1.1,0 -2,-0.9 -2,-2 v-4 c0,-1.1 0.9,-2 2,-2 z" />
+    <path
+        android:fillColor="#CBD5E1"
+        android:pathData="M44,53 h28 c1.1,0 2,0.9 2,2 c0,1.1 -0.9,2 -2,2 h-28 c-1.1,0 -2,-0.9 -2,-2 c0,-1.1 0.9,-2 2,-2 z" />
+
+    <!-- Period 2: Physics (cyan) -->
+    <path
+        android:fillColor="#06B6D4"
+        android:pathData="M32,62 h6 c1.1,0 2,0.9 2,2 v4 c0,1.1 -0.9,2 -2,2 h-6 c-1.1,0 -2,-0.9 -2,-2 v-4 c0,-1.1 0.9,-2 2,-2 z" />
+    <path
+        android:fillColor="#CBD5E1"
+        android:pathData="M44,64 h24 c1.1,0 2,0.9 2,2 c0,1.1 -0.9,2 -2,2 h-24 c-1.1,0 -2,-0.9 -2,-2 c0,-1.1 0.9,-2 2,-2 z" />
+
+    <!-- Period 3: Chemistry (emerald) -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M32,73 h6 c1.1,0 2,0.9 2,2 v4 c0,1.1 -0.9,2 -2,2 h-6 c-1.1,0 -2,-0.9 -2,-2 v-4 c0,-1.1 0.9,-2 2,-2 z" />
+    <path
+        android:fillColor="#CBD5E1"
+        android:pathData="M44,75 h20 c1.1,0 2,0.9 2,2 c0,1.1 -0.9,2 -2,2 h-20 c-1.1,0 -2,-0.9 -2,-2 c0,-1.1 0.9,-2 2,-2 z" />
+
+    <!-- Floating Time Clock Badge at lower right -->
+    <path
+        android:fillColor="#6366F1"
+        android:pathData="M73,73 m-13,0 a13,13 0 1,0 26,0 a13,13 0 1,0 -26,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M73,73 m-10.5,0 a10.5,10.5 0 1,0 21,0 a10.5,10.5 0 1,0 -21,0" />
+    <!-- Clock hands -->
+    <path
+        android:fillColor="#4F46E5"
+        android:pathData="M72,66 h2 v8 h5 v2 h-7 z" />
+</vector>

@@ -1,0 +1,6 @@
+{
+  "name": "Class Timetable",
+  "description": "Smart school and college timetable manager with automatic Today and Tomorrow schedule switching, customizable periods per day, and weekly schedule view.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
