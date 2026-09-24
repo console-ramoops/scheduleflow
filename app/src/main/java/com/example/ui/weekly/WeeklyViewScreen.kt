@@ -125,7 +125,7 @@ fun WeeklyViewScreen(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "Grid",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             fontWeight = if (isGrid) FontWeight.Bold else FontWeight.Normal,
                             color = if (isGrid) Color.White else MiuixTheme.colorScheme.onSurface
                         )
@@ -151,7 +151,7 @@ fun WeeklyViewScreen(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "Day List",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             fontWeight = if (isCards) FontWeight.Bold else FontWeight.Normal,
                             color = if (isCards) Color.White else MiuixTheme.colorScheme.onSurface
                         )
@@ -211,7 +211,7 @@ fun WeeklyViewScreen(
                             )
                             Text(
                                 text = "${activeDay.periodCount} Periods",
-                                style = MiuixTheme.textStyles.footnote,
+                                style = MiuixTheme.textStyles.footnote1,
                                 color = MiuixTheme.colorScheme.primary
                             )
                         }
@@ -255,7 +255,7 @@ fun WeeklyGridTable(
     ) {
         Text(
             text = "Scroll horizontally for all days • Tap any period cell to edit",
-            style = MiuixTheme.textStyles.footnote,
+            style = MiuixTheme.textStyles.footnote1,
             color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
         )
@@ -287,7 +287,7 @@ fun WeeklyGridTable(
                     ) {
                         Text(
                             text = "Pd",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             fontWeight = FontWeight.Bold,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
@@ -341,7 +341,7 @@ fun WeeklyGridTable(
                                 ) {
                                     Text(
                                         text = dayConfig.displayName,
-                                        style = MiuixTheme.textStyles.footnote,
+                                        style = MiuixTheme.textStyles.footnote1,
                                         fontWeight = FontWeight.Bold,
                                         color = MiuixTheme.colorScheme.onSurface,
                                         maxLines = 1,

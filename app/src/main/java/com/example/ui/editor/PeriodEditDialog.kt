@@ -106,7 +106,7 @@ fun PeriodEditDialog(
                         )
                         Text(
                             text = "Color & Icon will appear in timetable",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
@@ -130,7 +130,7 @@ fun PeriodEditDialog(
                 // Quick presets
                 Text(
                     text = "Quick Select Subject:",
-                    style = MiuixTheme.textStyles.footnote,
+                    style = MiuixTheme.textStyles.footnote1,
                     fontWeight = FontWeight.SemiBold,
                     color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                 )
@@ -208,7 +208,7 @@ fun PeriodEditDialog(
                 Column {
                     Text(
                         text = "Accent Color:",
-                        style = MiuixTheme.textStyles.footnote,
+                        style = MiuixTheme.textStyles.footnote1,
                         fontWeight = FontWeight.SemiBold,
                         color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                         modifier = Modifier.padding(bottom = 6.dp)
@@ -223,7 +223,7 @@ fun PeriodEditDialog(
                 Column {
                     Text(
                         text = "Subject Icon:",
-                        style = MiuixTheme.textStyles.footnote,
+                        style = MiuixTheme.textStyles.footnote1,
                         fontWeight = FontWeight.SemiBold,
                         color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                         modifier = Modifier.padding(bottom = 6.dp)

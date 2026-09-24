@@ -184,7 +184,7 @@ fun PresetSubjectChips(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = preset.name,
-                        style = MiuixTheme.textStyles.footnote,
+                        style = MiuixTheme.textStyles.footnote1,
                         color = MiuixTheme.colorScheme.onSurface
                     )
                 }

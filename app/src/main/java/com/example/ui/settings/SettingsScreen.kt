@@ -125,7 +125,7 @@ fun SettingsScreen(
                         )
                         Text(
                             text = "Current switch time: $cutoffFormatted",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             color = MiuixTheme.colorScheme.primary
                         )
                     }
@@ -135,7 +135,7 @@ fun SettingsScreen(
 
                 Text(
                     text = "Before this time, the app displays Today's Timetable. At or after this time, the app automatically displays Tomorrow's Timetable (or next school day).",
-                    style = MiuixTheme.textStyles.footnote,
+                    style = MiuixTheme.textStyles.footnote1,
                     color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                 )
 
@@ -212,7 +212,7 @@ fun SettingsScreen(
                         )
                         Text(
                             text = "Toggle active school days, rename, and set periods per day",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
@@ -269,7 +269,7 @@ fun SettingsScreen(
                                 }
                                 Text(
                                     text = if (dayConfig.isEnabled) "${dayConfig.periodCount} periods" else "Off",
-                                    style = MiuixTheme.textStyles.footnote,
+                                    style = MiuixTheme.textStyles.footnote1,
                                     color = if (dayConfig.isEnabled)
                                         MiuixTheme.colorScheme.primary
                                     else
@@ -375,7 +375,7 @@ fun SettingsScreen(
                         )
                         Text(
                             text = "Choose interface theme mode",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
@@ -416,7 +416,7 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = label,
-                                    style = MiuixTheme.textStyles.footnote,
+                                    style = MiuixTheme.textStyles.footnote1,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                     color = if (isSelected) Color.White else MiuixTheme.colorScheme.onSurface
                                 )
@@ -444,7 +444,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "Reset all periods, clear saved subjects, and reconfigure timetable setup from scratch.",
-                    style = MiuixTheme.textStyles.footnote,
+                    style = MiuixTheme.textStyles.footnote1,
                     color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                 )
 

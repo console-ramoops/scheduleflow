@@ -509,7 +509,7 @@ private fun Step2DaysConfig(
                             }
                             Text(
                                 text = if (day.isEnabled) "Active school day" else "Off / No classes",
-                                style = MiuixTheme.textStyles.footnote,
+                                style = MiuixTheme.textStyles.footnote1,
                                 color = if (day.isEnabled) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.onSurfaceVariantSummary
                             )
                         }
@@ -610,7 +610,7 @@ private fun Step3PeriodsPerDay(
                             )
                             Text(
                                 text = "${day.periodCount} periods scheduled",
-                                style = MiuixTheme.textStyles.footnote,
+                                style = MiuixTheme.textStyles.footnote1,
                                 color = MiuixTheme.colorScheme.primary
                             )
                         }

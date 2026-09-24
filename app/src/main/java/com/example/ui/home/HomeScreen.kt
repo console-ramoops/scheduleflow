@@ -176,7 +176,7 @@ fun HomeScreen(
                             } else {
                                 "Manual view • Cutoff is set to $cutoffFormatted"
                             },
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
@@ -197,14 +197,14 @@ fun HomeScreen(
                         ) {
                             Text(
                                 text = "$assignedCount of ${periods.size} periods filled",
-                                style = MiuixTheme.textStyles.footnote,
+                                style = MiuixTheme.textStyles.footnote1,
                                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                             )
                         }
 
                         Text(
                             text = "Tap period to edit",
-                            style = MiuixTheme.textStyles.footnote,
+                            style = MiuixTheme.textStyles.footnote1,
                             fontWeight = FontWeight.Medium,
                             color = MiuixTheme.colorScheme.primary
                         )
@@ -379,7 +379,7 @@ fun HomeScreen(
                 if (periods.none { it.isAssigned }) {
                     Text(
                         text = "No subjects assigned yet",
-                        style = MiuixTheme.textStyles.footnote,
+                        style = MiuixTheme.textStyles.footnote1,
                         color = MiuixTheme.colorScheme.error
                     )
                 }
@@ -529,7 +529,7 @@ fun PeriodCard(
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "${entry.startTime} - ${entry.endTime}".trim().removePrefix("-").removeSuffix("-").trim(),
-                                style = MiuixTheme.textStyles.footnote,
+                                style = MiuixTheme.textStyles.footnote1,
                                 fontWeight = FontWeight.Medium,
                                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                             )
@@ -547,7 +547,7 @@ fun PeriodCard(
                             Spacer(modifier = Modifier.width(3.dp))
                             Text(
                                 text = entry.room,
-                                style = MiuixTheme.textStyles.footnote,
+                                style = MiuixTheme.textStyles.footnote1,
                                 color = MiuixTheme.colorScheme.secondary
                             )
                         }
@@ -564,7 +564,7 @@ fun PeriodCard(
                             Spacer(modifier = Modifier.width(3.dp))
                             Text(
                                 text = entry.teacher,
-                                style = MiuixTheme.textStyles.footnote,
+                                style = MiuixTheme.textStyles.footnote1,
                                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
