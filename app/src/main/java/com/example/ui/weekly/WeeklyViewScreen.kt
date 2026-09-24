@@ -225,7 +225,7 @@ fun WeeklyViewScreen(
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
             }
@@ -315,6 +315,7 @@ fun WeeklyGridTable(
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
 
@@ -396,6 +397,7 @@ fun WeeklyGridTable(
                                         }
                                     }
                                 }
+                                Spacer(modifier = Modifier.height(100.dp))
                             }
                         }
                     }
@@ -403,7 +405,7 @@ fun WeeklyGridTable(
             }
         }
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 

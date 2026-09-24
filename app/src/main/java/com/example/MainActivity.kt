@@ -32,11 +32,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.model.ConfiguredDay
 import com.example.ui.TimetableViewModel
 import com.example.ui.editor.PeriodEditDialog
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.navigationevent.NavigationEventDispatcher
+import androidx.navigationevent.NavigationEventDispatcherOwner
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import com.example.ui.home.HomeScreen
 import com.example.ui.settings.SettingsScreen
 import com.example.ui.setup.SetupWizardScreen
 import com.example.ui.theme.ScheduleFlowTheme
 import com.example.ui.weekly.WeeklyViewScreen
+import top.yukonga.miuix.kmp.basic.FloatingNavigationBar
+import top.yukonga.miuix.kmp.basic.FloatingNavigationBarItem
 import top.yukonga.miuix.kmp.basic.NavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBarItem
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -46,30 +53,39 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel: TimetableViewModel = viewModel()
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val rootDispatcherOwner = remember {
+                object : NavigationEventDispatcherOwner {
+                    override val navigationEventDispatcher = NavigationEventDispatcher()
+                }
+            }
+            CompositionLocalProvider(
+                LocalNavigationEventDispatcherOwner provides rootDispatcherOwner
+            ) {
+                val viewModel: TimetableViewModel = viewModel()
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            ScheduleFlowTheme(themeMode = uiState.settings.themeMode) {
-                if (uiState.isLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MiuixTheme.colorScheme.background),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = MiuixTheme.colorScheme.primary,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-                } else if (!uiState.isConfigured) {
-                    SetupWizardScreen(
-                        onSetupComplete = { normalPeriods, days ->
-                            viewModel.completeSetup(normalPeriods, days)
+                ScheduleFlowTheme(themeMode = uiState.settings.themeMode) {
+                    if (uiState.isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MiuixTheme.colorScheme.background),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = MiuixTheme.colorScheme.primary,
+                                modifier = Modifier.size(40.dp)
+                            )
                         }
-                    )
-                } else {
-                    MainAppScaffold(viewModel = viewModel)
+                    } else if (!uiState.isConfigured) {
+                        SetupWizardScreen(
+                            onSetupComplete = { normalPeriods, days ->
+                                viewModel.completeSetup(normalPeriods, days)
+                            }
+                        )
+                    } else {
+                        MainAppScaffold(viewModel = viewModel)
+                    }
                 }
             }
         }
@@ -83,45 +99,51 @@ fun MainAppScaffold(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    val useLiquidGlass = uiState.settings.useLiquidGlassBar
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MiuixTheme.colorScheme.background,
         bottomBar = {
-            NavigationBar(
-                color = MiuixTheme.colorScheme.surface,
-                modifier = Modifier.testTag("main_navigation_bar")
-            ) {
-                NavigationBarItem(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = if (selectedTab == 0) Icons.Filled.Schedule else Icons.Outlined.Schedule,
-                    label = "Schedule",
-                    modifier = Modifier.testTag("nav_item_schedule")
-                )
+            if (!useLiquidGlass) {
+                NavigationBar(
+                    color = MiuixTheme.colorScheme.surface,
+                    modifier = Modifier.testTag("main_navigation_bar")
+                ) {
+                    NavigationBarItem(
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        icon = if (selectedTab == 0) Icons.Filled.Schedule else Icons.Outlined.Schedule,
+                        label = "Schedule",
+                        modifier = Modifier.testTag("nav_item_schedule")
+                    )
 
-                NavigationBarItem(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = if (selectedTab == 1) Icons.Filled.CalendarViewWeek else Icons.Outlined.CalendarViewWeek,
-                    label = "Weekly",
-                    modifier = Modifier.testTag("nav_item_weekly")
-                )
+                    NavigationBarItem(
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        icon = if (selectedTab == 1) Icons.Filled.CalendarViewWeek else Icons.Outlined.CalendarViewWeek,
+                        label = "Weekly",
+                        modifier = Modifier.testTag("nav_item_weekly")
+                    )
 
-                NavigationBarItem(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    icon = if (selectedTab == 2) Icons.Filled.Settings else Icons.Outlined.Settings,
-                    label = "Settings",
-                    modifier = Modifier.testTag("nav_item_settings")
-                )
+                    NavigationBarItem(
+                        selected = selectedTab == 2,
+                        onClick = { selectedTab = 2 },
+                        icon = if (selectedTab == 2) Icons.Filled.Settings else Icons.Outlined.Settings,
+                        label = "Settings",
+                        modifier = Modifier.testTag("nav_item_settings")
+                    )
+                }
             }
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = if (useLiquidGlass) 0.dp else innerPadding.calculateBottomPadding()
+                )
         ) {
             when (selectedTab) {
                 0 -> HomeScreen(
@@ -140,8 +162,50 @@ fun MainAppScaffold(
                     onUpdateCutoffTime = { h, m -> viewModel.updateCutoffTime(h, m) },
                     onUpdateDayConfig = { viewModel.updateDayConfig(it) },
                     onUpdateTheme = { viewModel.updateTheme(it) },
-                    onResetTimetable = { viewModel.resetTimetable() }
+                    onResetTimetable = { viewModel.resetTimetable() },
+                    onUpdateLiquidGlassBar = { viewModel.updateLiquidGlassBar(it) }
                 )
+            }
+
+            // Liquid Glass Floating Navigation Bar
+            if (useLiquidGlass) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .testTag("liquid_glass_navigation_bar_container")
+                ) {
+                    FloatingNavigationBar(
+                        color = MiuixTheme.colorScheme.surfaceContainer.copy(alpha = 0.88f),
+                        cornerRadius = 24.dp,
+                        shadowElevation = 8.dp,
+                        showDivider = true,
+                        modifier = Modifier.testTag("floating_navigation_bar")
+                    ) {
+                        FloatingNavigationBarItem(
+                            selected = selectedTab == 0,
+                            onClick = { selectedTab = 0 },
+                            icon = if (selectedTab == 0) Icons.Filled.Schedule else Icons.Outlined.Schedule,
+                            label = "Schedule",
+                            modifier = Modifier.testTag("nav_item_schedule")
+                        )
+
+                        FloatingNavigationBarItem(
+                            selected = selectedTab == 1,
+                            onClick = { selectedTab = 1 },
+                            icon = if (selectedTab == 1) Icons.Filled.CalendarViewWeek else Icons.Outlined.CalendarViewWeek,
+                            label = "Weekly",
+                            modifier = Modifier.testTag("nav_item_weekly")
+                        )
+
+                        FloatingNavigationBarItem(
+                            selected = selectedTab == 2,
+                            onClick = { selectedTab = 2 },
+                            icon = if (selectedTab == 2) Icons.Filled.Settings else Icons.Outlined.Settings,
+                            label = "Settings",
+                            modifier = Modifier.testTag("nav_item_settings")
+                        )
+                    }
+                }
             }
         }
 

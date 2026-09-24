@@ -20,10 +20,14 @@ import androidx.compose.material.icons.filled.MeetingRoom
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigationevent.NavigationEventDispatcher
+import androidx.navigationevent.NavigationEventDispatcherOwner
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,11 +67,20 @@ fun PeriodEditDialog(
     var colorHex by remember { mutableStateOf(period.colorHex) }
     var iconName by remember { mutableStateOf(period.iconName) }
 
-    WindowDialog(
-        show = true,
-        title = "Period ${period.periodNumber} • $dayName",
-        summary = if (period.isAssigned) "Edit subject and period details" else "Assign subject to period",
-        onDismissRequest = onDismiss,
+    val dialogDispatcherOwner = remember {
+        object : NavigationEventDispatcherOwner {
+            override val navigationEventDispatcher = NavigationEventDispatcher()
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalNavigationEventDispatcherOwner provides dialogDispatcherOwner
+    ) {
+        WindowDialog(
+            show = true,
+            title = "Period ${period.periodNumber} • $dayName",
+            summary = if (period.isAssigned) "Edit subject and period details" else "Assign subject to period",
+            onDismissRequest = onDismiss,
         content = {
             Column(
                 modifier = Modifier
@@ -286,4 +299,5 @@ fun PeriodEditDialog(
             }
         }
     )
+    }
 }

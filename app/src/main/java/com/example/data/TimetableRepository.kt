@@ -45,7 +45,8 @@ class TimetableRepository(private val dao: TimetableDao) {
             normalDayPeriods = prefMap["normal_day_periods"]?.toIntOrNull() ?: 7,
             cutoffHour = prefMap["cutoff_hour"]?.toIntOrNull() ?: 17,
             cutoffMinute = prefMap["cutoff_minute"]?.toIntOrNull() ?: 0,
-            themeMode = prefMap["theme_mode"] ?: "SYSTEM"
+            themeMode = prefMap["theme_mode"] ?: "SYSTEM",
+            useLiquidGlassBar = prefMap["use_liquid_glass_bar"] != "false"
         )
     }
 
@@ -189,6 +190,10 @@ class TimetableRepository(private val dao: TimetableDao) {
 
     suspend fun updateThemeMode(themeMode: String) {
         dao.insertPreference(AppPreferenceEntity("theme_mode", themeMode))
+    }
+
+    suspend fun updateLiquidGlassBar(enabled: Boolean) {
+        dao.insertPreference(AppPreferenceEntity("use_liquid_glass_bar", enabled.toString()))
     }
 
     suspend fun resetTimetable() {

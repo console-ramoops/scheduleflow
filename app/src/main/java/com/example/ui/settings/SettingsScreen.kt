@@ -30,11 +30,15 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.SettingsBrightness
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigationevent.NavigationEventDispatcher
+import androidx.navigationevent.NavigationEventDispatcherOwner
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,8 +71,15 @@ fun SettingsScreen(
     onUpdateDayConfig: (ConfiguredDay) -> Unit,
     onUpdateTheme: (String) -> Unit,
     onResetTimetable: () -> Unit,
+    onUpdateLiquidGlassBar: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val dialogDispatcherOwner = remember {
+        object : NavigationEventDispatcherOwner {
+            override val navigationEventDispatcher = NavigationEventDispatcher()
+        }
+    }
+
     var showCustomTimeDialog by remember { mutableStateOf(false) }
     var showResetDialog by remember { mutableStateOf(false) }
     var editingDayName by remember { mutableStateOf<ConfiguredDay?>(null) }
@@ -424,6 +435,36 @@ fun SettingsScreen(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = MiuixTheme.colorScheme.dividerLine)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Liquid Glass Navigation Bar",
+                            style = MiuixTheme.textStyles.title4,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MiuixTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Floating translucent pill bar with shadow & squircle curves",
+                            style = MiuixTheme.textStyles.footnote1,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
+                        )
+                    }
+
+                    Switch(
+                        checked = uiState.settings.useLiquidGlassBar,
+                        onCheckedChange = { onUpdateLiquidGlassBar(it) }
+                    )
+                }
             }
         }
 
@@ -465,7 +506,7 @@ fun SettingsScreen(
         }
 
         item {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 
@@ -474,8 +515,11 @@ fun SettingsScreen(
         var hourInput by remember { mutableIntStateOf(uiState.settings.cutoffHour) }
         var minuteInput by remember { mutableIntStateOf(uiState.settings.cutoffMinute) }
 
-        WindowDialog(
-            show = true,
+        CompositionLocalProvider(
+            LocalNavigationEventDispatcherOwner provides dialogDispatcherOwner
+        ) {
+            WindowDialog(
+                show = true,
             title = "Set Cutoff Time",
             summary = "Select the time when timetable automatically switches to tomorrow",
             onDismissRequest = { showCustomTimeDialog = false },
@@ -555,86 +599,95 @@ fun SettingsScreen(
                 }
             }
         )
+        }
     }
 
     // Rename Day Dialog
     if (editingDayName != null) {
         val targetDay = editingDayName!!
-        WindowDialog(
-            show = true,
-            title = "Rename Day",
-            onDismissRequest = { editingDayName = null },
-            content = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    TextField(
-                        value = dayNameInput,
-                        onValueChange = { dayNameInput = it },
-                        label = "Display Name",
-                        useLabelAsPlaceholder = true,
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+        CompositionLocalProvider(
+            LocalNavigationEventDispatcherOwner provides dialogDispatcherOwner
+        ) {
+            WindowDialog(
+                show = true,
+                title = "Rename Day",
+                onDismissRequest = { editingDayName = null },
+                content = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        TextField(
+                            value = dayNameInput,
+                            onValueChange = { dayNameInput = it },
+                            label = "Display Name",
+                            useLabelAsPlaceholder = true,
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            TextButton(
+                                text = "Cancel",
+                                onClick = { editingDayName = null },
+                                modifier = Modifier.weight(1f)
+                            )
+                            TextButton(
+                                text = "Save",
+                                onClick = {
+                                    if (dayNameInput.isNotBlank()) {
+                                        onUpdateDayConfig(targetDay.copy(displayName = dayNameInput.trim()))
+                                    }
+                                    editingDayName = null
+                                },
+                                colors = ButtonDefaults.textButtonColorsPrimary(),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    // Reset Confirmation Dialog
+    if (showResetDialog) {
+        CompositionLocalProvider(
+            LocalNavigationEventDispatcherOwner provides dialogDispatcherOwner
+        ) {
+            WindowDialog(
+                show = true,
+                title = "Reset Timetable?",
+                summary = "This will permanently clear all period assignments, subject names, and schedule settings. The setup wizard will reopen.",
+                onDismissRequest = { showResetDialog = false },
+                content = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         TextButton(
                             text = "Cancel",
-                            onClick = { editingDayName = null },
+                            onClick = { showResetDialog = false },
                             modifier = Modifier.weight(1f)
                         )
                         TextButton(
-                            text = "Save",
+                            text = "Reset All",
                             onClick = {
-                                if (dayNameInput.isNotBlank()) {
-                                    onUpdateDayConfig(targetDay.copy(displayName = dayNameInput.trim()))
-                                }
-                                editingDayName = null
+                                showResetDialog = false
+                                onResetTimetable()
                             },
-                            colors = ButtonDefaults.textButtonColorsPrimary(),
+                            colors = ButtonDefaults.textButtonColors(
+                                color = MiuixTheme.colorScheme.error,
+                                textColor = Color.White
+                            ),
                             modifier = Modifier.weight(1f)
                         )
                     }
                 }
-            }
-        )
-    }
-
-    // Reset Confirmation Dialog
-    if (showResetDialog) {
-        WindowDialog(
-            show = true,
-            title = "Reset Timetable?",
-            summary = "This will permanently clear all period assignments, subject names, and schedule settings. The setup wizard will reopen.",
-            onDismissRequest = { showResetDialog = false },
-            content = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    TextButton(
-                        text = "Cancel",
-                        onClick = { showResetDialog = false },
-                        modifier = Modifier.weight(1f)
-                    )
-                    TextButton(
-                        text = "Reset All",
-                        onClick = {
-                            showResetDialog = false
-                            onResetTimetable()
-                        },
-                        colors = ButtonDefaults.textButtonColors(
-                            color = MiuixTheme.colorScheme.error,
-                            textColor = Color.White
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        )
+            )
+        }
     }
 }

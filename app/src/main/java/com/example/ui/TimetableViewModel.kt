@@ -232,6 +232,12 @@ class TimetableViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun updateLiquidGlassBar(enabled: Boolean) {
+        viewModelScope.launch {
+            repository.updateLiquidGlassBar(enabled)
+        }
+    }
+
     fun resetTimetable() {
         viewModelScope.launch {
             repository.resetTimetable()

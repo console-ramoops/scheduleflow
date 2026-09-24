@@ -5,7 +5,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.navigationevent.NavigationEventDispatcher
+import androidx.navigationevent.NavigationEventDispatcherOwner
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import top.yukonga.miuix.kmp.theme.ColorSchemeMode
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.ThemeController
@@ -65,11 +69,21 @@ fun ScheduleFlowTheme(
         )
     }
 
-    MiuixTheme(controller = themeController) {
-        MaterialTheme(
-            colorScheme = materialColors,
-            typography = Typography,
-            content = content
-        )
+    val navigationEventDispatcherOwner = remember {
+        object : NavigationEventDispatcherOwner {
+            override val navigationEventDispatcher = NavigationEventDispatcher()
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalNavigationEventDispatcherOwner provides navigationEventDispatcherOwner
+    ) {
+        MiuixTheme(controller = themeController) {
+            MaterialTheme(
+                colorScheme = materialColors,
+                typography = Typography,
+                content = content
+            )
+        }
     }
 }
