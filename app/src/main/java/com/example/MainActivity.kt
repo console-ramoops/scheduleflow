@@ -73,7 +73,10 @@ class MainActivity : ComponentActivity() {
                 val viewModel: TimetableViewModel = viewModel()
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-                ScheduleFlowTheme(themeMode = uiState.settings.themeMode) {
+                ScheduleFlowTheme(
+                    themeMode = uiState.settings.themeMode,
+                    useMonet = uiState.settings.useMonet
+                ) {
                     if (uiState.isLoading) {
                         Box(
                             modifier = Modifier
@@ -197,7 +200,8 @@ fun MainAppScaffold(
                         onUpdateDayConfig = { viewModel.updateDayConfig(it) },
                         onUpdateTheme = { viewModel.updateTheme(it) },
                         onResetTimetable = { viewModel.resetTimetable() },
-                        onUpdateLiquidGlassBar = { viewModel.updateLiquidGlassBar(it) }
+                        onUpdateLiquidGlassBar = { viewModel.updateLiquidGlassBar(it) },
+                        onUpdateMonet = { viewModel.updateMonet(it) }
                     )
                 }
             }

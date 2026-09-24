@@ -238,6 +238,12 @@ class TimetableViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun updateMonet(enabled: Boolean) {
+        viewModelScope.launch {
+            repository.updateMonetTheming(enabled)
+        }
+    }
+
     fun resetTimetable() {
         viewModelScope.launch {
             repository.resetTimetable()

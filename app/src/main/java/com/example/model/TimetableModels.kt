@@ -57,7 +57,8 @@ data class UserSettings(
     val cutoffHour: Int = 17,
     val cutoffMinute: Int = 0,
     val themeMode: String = "SYSTEM", // "LIGHT", "DARK", "SYSTEM"
-    val useLiquidGlassBar: Boolean = true
+    val useLiquidGlassBar: Boolean = true,
+    val useMonet: Boolean = true
 ) {
     val cutoffTime: LocalTime
         get() = LocalTime.of(cutoffHour.coerceIn(0, 23), cutoffMinute.coerceIn(0, 59))

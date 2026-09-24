@@ -73,6 +73,7 @@ fun SettingsScreen(
     onUpdateTheme: (String) -> Unit,
     onResetTimetable: () -> Unit,
     onUpdateLiquidGlassBar: (Boolean) -> Unit = {},
+    onUpdateMonet: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val dialogDispatcherOwner = remember {
@@ -431,6 +432,36 @@ fun SettingsScreen(
                             }
                         }
                     }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = MiuixTheme.colorScheme.dividerLine)
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Dynamic Colors (Monet)",
+                            style = MiuixTheme.textStyles.title4,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MiuixTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Extract dynamic accent palette from system wallpaper (Android 12+)",
+                            style = MiuixTheme.textStyles.footnote1,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
+                        )
+                    }
+
+                    Switch(
+                        checked = uiState.settings.useMonet,
+                        onCheckedChange = { onUpdateMonet(it) }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

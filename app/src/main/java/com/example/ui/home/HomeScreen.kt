@@ -93,62 +93,53 @@ fun HomeScreen(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // Hero Header Card in HyperOS/Miuix squircle style
+        // Decluttered Minimal Hero Header Card
         item {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp)
                     .testTag("home_hero_card"),
-                insideMargin = PaddingValues(20.dp),
+                insideMargin = PaddingValues(18.dp),
                 colors = CardDefaults.defaultColors(color = MiuixTheme.colorScheme.surface)
             ) {
-                Column {
-                    // Status Pill & Live Clock Row
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    // Top: Timetable Title + Live Clock Pill
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MiuixTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                .padding(horizontal = 12.dp, vertical = 6.dp)
-                                .testTag("timetable_status_badge")
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = if (uiState.filterMode == ViewFilterMode.SMART_AUTO)
-                                        Icons.Default.AutoAwesome
-                                    else
-                                        Icons.Default.Today,
-                                    contentDescription = null,
-                                    tint = MiuixTheme.colorScheme.primary,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = uiState.headerTitle,
-                                    style = MiuixTheme.textStyles.body2,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MiuixTheme.colorScheme.primary
-                                )
-                            }
-                        }
-
-                        // Live System Clock
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.AccessTime,
+                                imageVector = if (uiState.filterMode == ViewFilterMode.SMART_AUTO)
+                                    Icons.Default.AutoAwesome
+                                else
+                                    Icons.Default.Today,
                                 contentDescription = null,
                                 tint = MiuixTheme.colorScheme.primary,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = uiState.headerTitle,
+                                style = MiuixTheme.textStyles.title3,
+                                fontWeight = FontWeight.Bold,
+                                color = MiuixTheme.colorScheme.primary,
+                                modifier = Modifier.testTag("timetable_status_badge")
+                            )
+                        }
+
+                        // Compact Clock Pill
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MiuixTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
                             Text(
                                 text = formattedTime,
-                                style = MiuixTheme.textStyles.title4,
+                                style = MiuixTheme.textStyles.footnote1,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MiuixTheme.colorScheme.onSurface,
                                 modifier = Modifier.testTag("current_time_display")
@@ -156,9 +147,7 @@ fun HomeScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Prominent Actual Date
+                    // Middle: Prominent Actual Date
                     Text(
                         text = formattedDate,
                         style = MiuixTheme.textStyles.title1,
@@ -167,208 +156,132 @@ fun HomeScreen(
                         modifier = Modifier.testTag("current_date_display")
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // Cutoff Helper Info
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = MiuixTheme.colorScheme.onSurfaceVariantSummary,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (uiState.filterMode == ViewFilterMode.SMART_AUTO) {
-                                val reason = uiState.autoSelection?.reasonDescription ?: ""
-                                "$reason • Auto-switch at $cutoffFormatted"
-                            } else {
-                                "Manual view • Cutoff is set to $cutoffFormatted"
-                            },
-                            style = MiuixTheme.textStyles.footnote1,
-                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Completion Summary & Edit hint
+                    // Bottom: Compact Progress & Switch Time
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MiuixTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = "$assignedCount of ${periods.size} periods filled",
-                                style = MiuixTheme.textStyles.footnote1,
-                                color = MiuixTheme.colorScheme.onSurfaceVariantSummary
-                            )
-                        }
-
                         Text(
-                            text = "Tap period to edit",
+                            text = "$assignedCount / ${periods.size} periods assigned",
                             style = MiuixTheme.textStyles.footnote1,
                             fontWeight = FontWeight.Medium,
-                            color = MiuixTheme.colorScheme.primary
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
+                        )
+
+                        Text(
+                            text = "Auto-switch at $cutoffFormatted",
+                            style = MiuixTheme.textStyles.footnote1,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
                     }
                 }
             }
         }
 
-        // View Mode Switcher Chips (Today, Tomorrow, Smart Auto, Full Week)
+        // Unified Single Row: Filter Modes & Day Chips
         item {
-            Column {
-                Row(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val smartSelected = uiState.filterMode == ViewFilterMode.SMART_AUTO
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (smartSelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
+                        )
+                        .clickable { onFilterModeChange(ViewFilterMode.SMART_AUTO) }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                        .testTag("filter_smart_auto")
                 ) {
-                    val smartSelected = uiState.filterMode == ViewFilterMode.SMART_AUTO
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                if (smartSelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
-                            )
-                            .clickable { onFilterModeChange(ViewFilterMode.SMART_AUTO) }
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
-                            .testTag("filter_smart_auto")
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
-                                tint = if (smartSelected) Color.White else MiuixTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Smart (Auto)",
-                                style = MiuixTheme.textStyles.body2,
-                                fontWeight = if (smartSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (smartSelected) Color.White else MiuixTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
-
-                    val todaySelected = uiState.filterMode == ViewFilterMode.TODAY
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                if (todaySelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
-                            )
-                            .clickable { onFilterModeChange(ViewFilterMode.TODAY) }
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
-                            .testTag("filter_today")
-                    ) {
-                        Text(
-                            text = "Today",
-                            style = MiuixTheme.textStyles.body2,
-                            fontWeight = if (todaySelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (todaySelected) Color.White else MiuixTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    val tomorrowSelected = uiState.filterMode == ViewFilterMode.TOMORROW
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                if (tomorrowSelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
-                            )
-                            .clickable { onFilterModeChange(ViewFilterMode.TOMORROW) }
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
-                            .testTag("filter_tomorrow")
-                    ) {
-                        Text(
-                            text = "Tomorrow",
-                            style = MiuixTheme.textStyles.body2,
-                            fontWeight = if (tomorrowSelected) FontWeight.Bold else FontWeight.Normal,
-                            color = if (tomorrowSelected) Color.White else MiuixTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(MiuixTheme.colorScheme.surfaceVariant)
-                            .clickable { onNavigateToWeekly() }
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
-                            .testTag("filter_full_week")
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.DateRange,
-                                contentDescription = null,
-                                tint = MiuixTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Full Week",
-                                style = MiuixTheme.textStyles.body2,
-                                color = MiuixTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
+                    Text(
+                        text = "Auto",
+                        style = MiuixTheme.textStyles.body2,
+                        fontWeight = if (smartSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (smartSelected) Color.White else MiuixTheme.colorScheme.onSurface
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Individual Day Selector Chips Row (Mon, Tue, Wed, ...)
-                Row(
+                val todaySelected = uiState.filterMode == ViewFilterMode.TODAY
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (todaySelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
+                        )
+                        .clickable { onFilterModeChange(ViewFilterMode.TODAY) }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                        .testTag("filter_today")
                 ) {
-                    uiState.enabledDays.forEach { dayConfig ->
-                        val isDaySelected = uiState.activeDayOfWeek == dayConfig.dayOfWeek
-                        val shortName = ConfiguredDay.defaultShortName(dayConfig.dayOfWeek)
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    if (isDaySelected)
-                                        MiuixTheme.colorScheme.primary.copy(alpha = 0.15f)
-                                    else
-                                        MiuixTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
-                                )
-                                .then(
-                                    if (isDaySelected)
-                                        Modifier.border(1.5.dp, MiuixTheme.colorScheme.primary, RoundedCornerShape(12.dp))
-                                    else
-                                        Modifier
-                                )
-                                .clickable { onSelectDay(dayConfig.dayOfWeek) }
-                                .padding(horizontal = 14.dp, vertical = 8.dp)
-                                .testTag("day_chip_${shortName.lowercase()}")
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = shortName,
-                                    style = MiuixTheme.textStyles.body2,
-                                    fontWeight = if (isDaySelected) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (isDaySelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = "${dayConfig.periodCount}p",
-                                    fontSize = 11.sp,
-                                    color = if (isDaySelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.onSurfaceVariantSummary
-                                )
-                            }
-                        }
+                    Text(
+                        text = "Today",
+                        style = MiuixTheme.textStyles.body2,
+                        fontWeight = if (todaySelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (todaySelected) Color.White else MiuixTheme.colorScheme.onSurface
+                    )
+                }
+
+                val tomorrowSelected = uiState.filterMode == ViewFilterMode.TOMORROW
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (tomorrowSelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
+                        )
+                        .clickable { onFilterModeChange(ViewFilterMode.TOMORROW) }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                        .testTag("filter_tomorrow")
+                ) {
+                    Text(
+                        text = "Tomorrow",
+                        style = MiuixTheme.textStyles.body2,
+                        fontWeight = if (tomorrowSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (tomorrowSelected) Color.White else MiuixTheme.colorScheme.onSurface
+                    )
+                }
+
+                // Vertical separator
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(20.dp)
+                        .background(MiuixTheme.colorScheme.outline.copy(alpha = 0.2f))
+                )
+
+                // Day Selector Chips (Mon, Tue, Wed, ...)
+                uiState.enabledDays.forEach { dayConfig ->
+                    val isDaySelected = uiState.activeDayOfWeek == dayConfig.dayOfWeek
+                    val shortName = ConfiguredDay.defaultShortName(dayConfig.dayOfWeek)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                if (isDaySelected)
+                                    MiuixTheme.colorScheme.primary.copy(alpha = 0.15f)
+                                else
+                                    MiuixTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            )
+                            .then(
+                                if (isDaySelected)
+                                    Modifier.border(1.5.dp, MiuixTheme.colorScheme.primary, RoundedCornerShape(12.dp))
+                                else
+                                    Modifier
+                            )
+                            .clickable { onSelectDay(dayConfig.dayOfWeek) }
+                            .padding(horizontal = 12.dp, vertical = 7.dp)
+                            .testTag("day_chip_${shortName.lowercase()}")
+                    ) {
+                        Text(
+                            text = shortName,
+                            style = MiuixTheme.textStyles.body2,
+                            fontWeight = if (isDaySelected) FontWeight.Bold else FontWeight.Normal,
+                            color = if (isDaySelected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.onSurface
+                        )
                     }
                 }
             }
