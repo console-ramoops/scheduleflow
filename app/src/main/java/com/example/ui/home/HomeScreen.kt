@@ -1,7 +1,6 @@
 package com.example.ui.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.School
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,8 +45,6 @@ import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.utils.PressFeedbackType
-
-import androidx.compose.runtime.remember
 
 @Composable
 fun HomeScreen(
@@ -72,42 +70,33 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        // Clean header — just the essentials
+        // Clean Minimal Header
         item {
             Column(
-                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = uiState.headerTitle,
                     style = MiuixTheme.textStyles.headline1,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                     color = MiuixTheme.colorScheme.onBackground,
                     modifier = Modifier.testTag("timetable_status_badge")
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = formattedDate,
-                        style = MiuixTheme.textStyles.body1,
-                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
-                        modifier = Modifier.testTag("current_date_display")
-                    )
-                    Text(
-                        text = formattedTime,
-                        style = MiuixTheme.textStyles.body1,
-                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
-                        modifier = Modifier.testTag("current_time_display")
-                    )
-                }
+                Text(
+                    text = "$formattedDate  •  $formattedTime",
+                    style = MiuixTheme.textStyles.body1,
+                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                    modifier = Modifier.testTag("current_date_display")
+                )
             }
         }
 
-        // Day chips only — filter mode is implicit via Smart Auto default
+        // Sleek Day Selector Bar (Today, Tomorrow, Day Chips)
         item {
             Row(
                 modifier = Modifier
@@ -116,8 +105,59 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Today Quick Switch
+                val isTodayActive = uiState.filterMode == ViewFilterMode.TODAY
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (isTodayActive) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
+                        )
+                        .clickable { onFilterModeChange(ViewFilterMode.TODAY) }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                        .testTag("filter_today")
+                ) {
+                    Text(
+                        text = "Today",
+                        style = MiuixTheme.textStyles.body2,
+                        fontWeight = if (isTodayActive) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isTodayActive) MiuixTheme.colorScheme.onPrimary else MiuixTheme.colorScheme.onSurface
+                    )
+                }
+
+                // Tomorrow Quick Switch
+                val isTomorrowActive = uiState.filterMode == ViewFilterMode.TOMORROW
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (isTomorrowActive) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.surfaceVariant
+                        )
+                        .clickable { onFilterModeChange(ViewFilterMode.TOMORROW) }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                        .testTag("filter_tomorrow")
+                ) {
+                    Text(
+                        text = "Tomorrow",
+                        style = MiuixTheme.textStyles.body2,
+                        fontWeight = if (isTomorrowActive) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isTomorrowActive) MiuixTheme.colorScheme.onPrimary else MiuixTheme.colorScheme.onSurface
+                    )
+                }
+
+                // Thin vertical separator
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(18.dp)
+                        .background(MiuixTheme.colorScheme.outline.copy(alpha = 0.2f))
+                )
+
+                // Day Chips (Mon, Tue, Wed, ...)
                 uiState.enabledDays.forEach { dayConfig ->
-                    val isDaySelected = uiState.activeDayOfWeek == dayConfig.dayOfWeek
+                    val isDaySelected = uiState.activeDayOfWeek == dayConfig.dayOfWeek &&
+                        uiState.filterMode != ViewFilterMode.TODAY &&
+                        uiState.filterMode != ViewFilterMode.TOMORROW
                     val shortName = ConfiguredDay.defaultShortName(dayConfig.dayOfWeek)
                     Box(
                         modifier = Modifier
@@ -129,7 +169,7 @@ fun HomeScreen(
                                     MiuixTheme.colorScheme.surfaceVariant
                             )
                             .clickable { onSelectDay(dayConfig.dayOfWeek) }
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
                             .testTag("day_chip_${shortName.lowercase()}")
                     ) {
                         Text(
@@ -143,7 +183,7 @@ fun HomeScreen(
             }
         }
 
-        // Period list — clean, minimal cards
+        // Period list — minimal, modern, uncluttered cards
         if (periods.isEmpty()) {
             item {
                 Box(
@@ -161,7 +201,7 @@ fun HomeScreen(
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "No periods for this day",
+                            text = "No periods scheduled for this day",
                             style = MiuixTheme.textStyles.body1,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary
                         )
@@ -173,7 +213,7 @@ fun HomeScreen(
                 items = periods,
                 key = { it.periodNumber }
             ) { entry ->
-                PeriodRow(
+                PeriodCard(
                     entry = entry,
                     onClick = { onEditPeriod(entry) }
                 )
@@ -186,8 +226,11 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Clean, uncluttered PeriodCard used in both HomeScreen and WeeklyViewScreen.
+ */
 @Composable
-fun PeriodRow(
+fun PeriodCard(
     entry: PeriodEntry,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -200,7 +243,7 @@ fun PeriodRow(
         modifier = modifier
             .fillMaxWidth()
             .testTag("period_card_${entry.periodNumber}"),
-        insideMargin = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+        insideMargin = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
         pressFeedbackType = PressFeedbackType.Sink,
         onClick = onClick,
         colors = CardDefaults.defaultColors(color = MiuixTheme.colorScheme.surface)
@@ -209,7 +252,7 @@ fun PeriodRow(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Period number — color-coded bar
+            // Period Number Colored Indicator Strip
             Box(
                 modifier = Modifier
                     .size(width = 4.dp, height = 36.dp)
@@ -230,36 +273,35 @@ fun PeriodRow(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Subject name — the only thing that matters
+            // Subject name & optional details
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = if (entry.isAssigned) entry.subject else "Tap to assign",
+                    text = if (entry.isAssigned) entry.subject else "Tap to assign period",
                     style = MiuixTheme.textStyles.body1,
                     fontWeight = if (entry.isAssigned) FontWeight.SemiBold else FontWeight.Normal,
                     color = if (entry.isAssigned) MiuixTheme.colorScheme.onSurface else MiuixTheme.colorScheme.onSurfaceVariantSummary.copy(alpha = 0.5f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                // Show time inline if set — nothing else
-                if (entry.isAssigned && entry.startTime.isNotBlank()) {
+
+                // Subtitle details: Time, Room, Teacher cleanly formatted in one line
+                val details = buildList {
+                    if (entry.startTime.isNotBlank() || entry.endTime.isNotBlank()) {
+                        add("${entry.startTime} – ${entry.endTime}".trim())
+                    }
+                    if (entry.room.isNotBlank()) add(entry.room)
+                    if (entry.teacher.isNotBlank()) add(entry.teacher)
+                }.joinToString("  •  ")
+
+                if (entry.isAssigned && details.isNotBlank()) {
                     Text(
-                        text = "${entry.startTime} – ${entry.endTime}".trim(),
+                        text = details,
                         style = MiuixTheme.textStyles.footnote1,
-                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary
+                        color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-            }
-
-            // Compact teacher tag if present
-            if (entry.isAssigned && entry.teacher.isNotBlank()) {
-                Text(
-                    text = entry.teacher,
-                    style = MiuixTheme.textStyles.footnote1,
-                    color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
             }
         }
     }

@@ -2,9 +2,11 @@
 
 package com.example.ui.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -343,10 +345,17 @@ fun LiquidGlassNavigationBar(
     val tabsContent: @Composable RowScope.() -> Unit = {
         val tabScale = LocalIosTabScale.current
         items.forEachIndexed { index, item ->
+            val isSelected = index == currentIndex
+            val itemColor by animateColorAsState(
+                targetValue = if (isSelected) accentColor else tabContentColor.copy(alpha = if (isDark) 0.65f else 0.75f),
+                animationSpec = tween(durationMillis = 180),
+                label = "tab_color_$index"
+            )
+
             Column(
                 modifier = Modifier
                     .semantics(mergeDescendants = true) {
-                        selected = index == currentIndex
+                        selected = isSelected
                         role = Role.Tab
                         onClick {
                             activateTab(index)
@@ -377,15 +386,17 @@ fun LiquidGlassNavigationBar(
             ) {
                 Icon(
                     modifier = Modifier.size(22.dp),
-                    imageVector = if (index == currentIndex) item.selectedIcon else item.unselectedIcon,
+                    imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
                     contentDescription = null,
+                    tint = itemColor,
                 )
                 Text(
                     text = item.label,
                     fontSize = 11.sp,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    color = itemColor,
                 )
             }
         }
@@ -512,13 +523,13 @@ fun LiquidGlassNavigationBar(
                                 effects = {
                                     val progress = dampedDrag.pressProgress
                                     lens(
-                                        refractionHeight = 10.dp.toPx() * progress,
-                                        refractionAmount = 14.dp.toPx() * progress,
+                                        refractionHeight = 8.dp.toPx() + 6.dp.toPx() * progress,
+                                        refractionAmount = 10.dp.toPx() + 6.dp.toPx() * progress,
                                         depthEffect = true,
-                                        chromaticAberration = 0.5f,
+                                        chromaticAberration = 0.2f,
                                     )
                                 },
-                                highlight = { pillHighlight.value.copy(alpha = dampedDrag.pressProgress) },
+                                highlight = { pillHighlight.value.copy(alpha = 0.75f + 0.25f * dampedDrag.pressProgress) },
                                 layerBlock = {
                                     scaleX = dampedDrag.scaleX
                                     scaleY = dampedDrag.scaleY
@@ -528,18 +539,21 @@ fun LiquidGlassNavigationBar(
                                 },
                                 onDrawSurface = {
                                     val progress = dampedDrag.pressProgress
+                                    // Liquid Monet tint: dynamic wallpaper accent with luminous glass sheen
                                     drawRect(
-                                        color = if (!isDark) Color.Black.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.1f),
-                                        alpha = 1f - progress,
+                                        color = accentColor.copy(alpha = if (isDark) 0.24f else 0.18f),
                                     )
-                                    drawRect(Color.Black.copy(alpha = 0.03f * progress))
+                                    drawRect(
+                                        color = if (!isDark) Color.White.copy(alpha = 0.12f) else Color.White.copy(alpha = 0.06f),
+                                    )
+                                    drawRect(Color.Black.copy(alpha = 0.04f * progress))
                                 },
                             )
                             .innerShadow(shape = pillShape) {
                                 InnerShadow(
-                                    radius = 8.dp * dampedDrag.pressProgress,
-                                    color = Color.Black.copy(alpha = 0.15f),
-                                    alpha = dampedDrag.pressProgress,
+                                    radius = 4.dp + 4.dp * dampedDrag.pressProgress,
+                                    color = accentColor.copy(alpha = 0.25f),
+                                    alpha = 0.75f + 0.25f * dampedDrag.pressProgress,
                                 )
                             }
                             .height(56.dp)
